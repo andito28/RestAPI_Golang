@@ -14,6 +14,7 @@ func main() {
 	router := gin.Default()
 	api := router.Group("api/v1")
 	api.GET("/test", productController.Index)
+	api.POST("/test1", productController.Store)
 
 	router.Run("localhost:8080")
 }

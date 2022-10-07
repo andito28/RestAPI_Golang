@@ -6,6 +6,8 @@ import (
 	"github.com/andito28/RestAPI_Golang/helper"
 	"github.com/andito28/RestAPI_Golang/models"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+
 	"gorm.io/gorm"
 )
 
@@ -24,10 +26,18 @@ type ProductFormatter struct {
 	Quantity    int    `json:"quantity"`
 }
 
+type ProductInput struct {
+	ProductName string `json:"product_name" binding:"required"`
+	Price       int    `json:"price" binding:"required"`
+	Quantity    int    `json:"quantity" binding:"required"`
+}
+
 func FormatProduct(product models.Product) ProductFormatter {
 	var formatter ProductFormatter
 	formatter.ID = product.ID
 	formatter.ProductName = product.ProductName
+	formatter.Price = product.Price
+	formatter.Quantity = product.Quantity
 	return formatter
 }
 
@@ -43,9 +53,24 @@ func FormatProducts(products []models.Product) []ProductFormatter {
 	return productsFormatter
 }
 
-func (ctx *productController) Index(c *gin.Context) {
+func (ctr *productController) Index(c *gin.Context) {
 	var products []models.Product
-	ctx.db.Find(&products)
+	ctr.db.Find(&products)
 	response := helper.ApiResponse("List Product", http.StatusOK, "Success", FormatProducts(products))
 	c.JSON(http.StatusOK, response)
+}
+
+func (ctr *productController) Store(c *gin.Context) {
+	var input ProductInput
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		var errors []string
+		for _, e := range err.(validator.ValidationErrors) {
+			errors = append(errors, e.Error())
+		}
+		response := helper.ApiResponse("List Product", http.StatusOK, "Success", errors)
+		c.JSON(http.StatusOK, response)
+		return
+	}
+	c.JSON(http.StatusOK, input)
 }
