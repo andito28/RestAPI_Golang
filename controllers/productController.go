@@ -77,7 +77,6 @@ func (ctr *productController) Store(c *gin.Context) {
 	product.ProductName = input.ProductName
 	product.Price = input.Price
 	product.Quantity = input.Quantity
-
 	ctr.db.Create(&product)
 	response := helper.ApiResponse("Success to create product", http.StatusOK, "Success", product)
 	c.JSON(http.StatusOK, response)
@@ -87,13 +86,11 @@ func (ctr *productController) Edit(c *gin.Context) {
 	id := c.Param("id")
 	product := models.Product{}
 	err := ctr.db.Where("id=?", id).First(&product).Error
-
 	if err != nil {
 		response := helper.ApiResponse("Error to get product", http.StatusBadRequest, "Error", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-
 	response := helper.ApiResponse("Success to get product", http.StatusOK, "Success", product)
 	c.JSON(http.StatusOK, response)
 }
@@ -101,13 +98,11 @@ func (ctr *productController) Edit(c *gin.Context) {
 func (ctr *productController) Update(c *gin.Context) {
 	product := models.Product{}
 	id := c.Param("id")
-
 	if err := ctr.db.Where("id=?", id).First(&product).Error; err != nil {
 		response := helper.ApiResponse("Error to update product", http.StatusBadRequest, "Error", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-
 	input := ProductInput{}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		var errors []string
@@ -118,13 +113,10 @@ func (ctr *productController) Update(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
-
 	product.ProductName = input.ProductName
 	product.Price = input.Price
 	product.Quantity = input.Quantity
-
 	ctr.db.Save(&product)
-
 	response := helper.ApiResponse("Success to update product", http.StatusOK, "Success", product)
 	c.JSON(http.StatusUnprocessableEntity, response)
 	return
@@ -135,13 +127,11 @@ func (ctr *productController) Delete(c *gin.Context) {
 	id := c.Param("id")
 	product := models.Product{}
 	err := ctr.db.Where("id=?", id).First(&product).Delete(&product).Error
-
 	if err != nil {
 		response := helper.ApiResponse("Error to delete product", http.StatusBadRequest, "Error", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-
 	response := helper.ApiResponse("Success to delete product", http.StatusOK, "Success", true)
 	c.JSON(http.StatusOK, response)
 }
