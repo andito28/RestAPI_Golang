@@ -13,8 +13,11 @@ func main() {
 	productController := controllers.NewProductController(db)
 	router := gin.Default()
 	api := router.Group("api/v1")
-	api.GET("/test", productController.Index)
-	api.POST("/test1", productController.Store)
+	api.GET("/product", productController.Index)
+	api.POST("/product", productController.Store)
+	api.GET("/product/:id", productController.Edit)
+	api.PUT("/product/:id", productController.Update)
+	api.DELETE("/product/:id", productController.Delete)
 
 	router.Run("localhost:8080")
 }
